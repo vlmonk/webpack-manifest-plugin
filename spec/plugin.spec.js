@@ -177,6 +177,25 @@ describe('ManifestPlugin', function() {
         });
       });
 
+      it('prefixes paths with a public path and handle [hash] from public path', function(done) {
+        webpackCompile({
+          context: __dirname,
+          entry: {
+            one: './fixtures/file.js',
+          },
+          output: {
+            filename: '[name].js',
+            publicPath: '/[hash]/app/'
+          }
+        }, {}, function(manifest, stats) {
+          expect(manifest).toEqual({
+            'one.js': '/' + stats.hash + '/app/one.js'
+          });
+
+          done();
+        });
+      });
+
       it('is possible to overrides publicPath', (done) => {
         webpackCompile({
           context: __dirname,
@@ -412,11 +431,11 @@ describe('ManifestPlugin', function() {
           expect(manifest).toEqual({
             'main.js': 'main.js'
           });
-  
+
           expect(JSON.parse(stats.compilation.assets['manifest.json'].source())).toEqual({
             'main.js': 'main.js'
           });
-  
+
           done();
         });
       });
@@ -485,7 +504,7 @@ describe('ManifestPlugin', function() {
             'wStyles.js': 'wStyles.js',
             'wStyles.css': 'wStyles.css'
           });
-  
+
           done();
         });
       });
